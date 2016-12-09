@@ -1,0 +1,106 @@
+﻿@using Dex.TrocaGames.Web.ViewModels.Jogador
+@model IEnumerable<JogadorViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<div class="row">
+    <div class="form-group">
+
+        <div class="col-md-11">
+            <input type="text" id="txt-termo-pesquisa" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="col-md-1">
+        <button id="btn-pesquisar" class="btn btn-primary">Pesquisar</button>
+    </div>
+
+</div>
+
+
+<table class="table" id="tbl-jogadores">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Idade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Jogo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Idade)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Jogo)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<!-- .jquery event oriented -->
+@section scripts {
+    <script type="text/javascript"> 
+        $(document).ready(function () {
+            $('#btn-pesquisar').click(function () {
+                var nomeJogador = $('#txt-termo-pesquisa').val();
+                $.ajax({
+                    //verbo http
+                    method: 'GET',
+                    url: '/Jogadores/PesquisarPorNome?nomeJogador=' + nomeJogador,
+                    success: function (data) {
+                        $('#tbl-jogadores > tbody tr').remove();
+                        $.each(data, function(index, jogador) {
+                            $('#tbl-jogadores > tbody').append(
+                                '<tr>' +
+                                '   <td>' + jogador.Nome + '</td>' +
+                                '   <td>' + jogador.Idade + '</td>' +
+                                '   <td>' + jogador.Jogo + '</td>' +
+                                '   <td>' +
+                                '       <a href= "/Jogador/Edit/' +jogador.Id + '">Edit</a> |' +
+                                '       <a href= "/Jogador/Details/' +jogador.Id + '">Details</a> |' +
+                                '       <a href= "/Jogador/Delete/' +jogador.Id + '">Delete</a> ' +
+                                    '</td>' +
+                                '</tr>'
+                        );
+                    });
+
+                    },
+                    error: function () {
+                        alert('Deu merda!');
+                    }
+                });
+            });
+        });
+    </script>
+}
